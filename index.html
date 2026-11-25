@@ -42,14 +42,11 @@ main{display:grid;gap:16px;padding:18px 0 36px}
 .ctl .val small{font-size:13px;font-weight:400;color:var(--ink2);letter-spacing:0}
 .ctl input[type=range]{width:100%;margin:2px 0;accent-color:var(--accent)}
 .ctl .ends{display:flex;justify-content:space-between;color:var(--ink2);font-size:12px}
+
+.ctl .two{display:grid;gap:6px}
+.ctl .two .val{font-size:15px;min-height:0;margin:0}
 .ctl .hint{color:var(--ink2);font-size:12.5px;line-height:1.4;margin:6px 0 0}
-.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:16px;padding-top:14px;border-top:1px solid var(--line)}
-.bar .lbl{color:var(--ink2);font-size:12.5px}
-button{font:inherit;font-size:13.5px;color:var(--ink);background:var(--surface);border:1px solid var(--axis);border-radius:6px;padding:5px 11px;cursor:pointer}
-button:hover{background:var(--wash)}
-button.on{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-#status{color:var(--ink2);font-size:12.5px;margin-left:auto}
+#status{color:var(--ink2);font-size:12.5px;text-align:right;height:16px;margin-top:4px}
 /* outcome */
 .plain{font-size:16px;line-height:1.55;margin:0;max-width:86ch}
 .plain b{font-weight:650}
@@ -66,8 +63,11 @@ button:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid
 .row .name{font-weight:600;line-height:1.2}
 .row .name small{display:block;color:var(--ink2);font-weight:400;font-size:12px}
 .row.all{padding-bottom:10px;border-bottom:1px solid var(--line);margin-bottom:2px}
+.grpname{font-weight:650;margin:8px 0 -2px}
+.row.rsub .name{font-weight:400;color:var(--ink2);padding-left:12px}
+.row.rsub .stack{height:22px}
 .stack{display:flex;gap:2px;height:28px;border-radius:4px;overflow:hidden}
-.row.all .stack{height:34px}
+.row.top .stack{height:34px}
 .stack div{min-width:0;display:flex;align-items:center;font-size:12px;font-weight:600;color:#fff;overflow:hidden;white-space:nowrap}
 .stack div span{padding-left:6px}
 .stack div:hover{filter:brightness(1.08)}
@@ -78,7 +78,11 @@ table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font
 th,td{text-align:right;padding:7px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
 th:first-child,td:first-child{text-align:left;white-space:normal}
 thead th{font-size:12.5px;color:var(--ink2);font-weight:600;border-bottom:1px solid var(--axis);vertical-align:bottom;white-space:normal;line-height:1.25}
-tbody tr.total td{font-weight:650;border-top:1px solid var(--axis);border-bottom:0}
+tbody tr.total td{font-weight:650;border-top:1px solid var(--axis)}
+tbody tr.total:last-child td{border-bottom:0}
+tbody tr.cat td{font-weight:600}
+tbody tr.seg td{color:var(--ink2)}
+tbody tr.seg td:first-child{padding-left:26px}
 td small{display:block;color:var(--ink2);font-size:12px;font-weight:400}
 .grp{border-left:1px solid var(--line)}
 .scroll{overflow-x:auto}
@@ -95,7 +99,7 @@ footer{color:var(--ink2);font-size:12.5px;padding-bottom:30px}
 <body>
 <header><div class="wrap">
   <h1>Partly Images case, Question 1: image-mix simulator</h1>
-  <p class="sub">Which image should each of the 71.1M auto-part SKUs get? The answer depends on three things the case does not tell us. Move a slider and the model re-decides for every part.</p>
+  <p class="sub">Which image should each of the 71.1M auto-part SKUs get? Three assumptions drive the answer. Move a slider to see it change.</p>
 </div></header>
 <div class="wrap"><main>
   <section class="panel">
@@ -105,47 +109,58 @@ footer{color:var(--ink2);font-size:12.5px;padding-bottom:30px}
         <div class="val" id="v_conc"></div>
         <input type="range" id="s_conc" min="1" max="3" step="0.02">
         <div class="ends"><span>Spread evenly</span><span>A few parts dominate</span></div>
-        <p class="hint">How much of each category's sales comes from its best sellers. The more concentrated, the fewer parts are worth a photo.</p>
+        <p class="hint">Share of sales made by the best-selling SKUs. Base case: 80% (the 80/20 rule).</p>
       </div>
       <div class="ctl">
-        <label for="s_reach">2. Share of the market through Partly's customers</label>
-        <div class="val" id="v_reach"></div>
-        <input type="range" id="s_reach" min="0" max="200" step="1">
+        <label id="l_reach">2. Share of the market through Partly's customers</label>
+        <div class="two">
+          <div><div class="val" id="v_reachOE"></div>
+            <input type="range" id="s_reachOE" min="0" max="200" step="1" aria-label="Share of the original-equipment market through Partly's customers">
+          </div>
+          <div><div class="val" id="v_reachAM"></div>
+            <input type="range" id="s_reachAM" min="0" max="200" step="1" aria-label="Share of the aftermarket through Partly's customers">
+          </div>
+        </div>
         <div class="ends"><span>0.1%</span><span>10%</span></div>
-        <p class="hint">Images only earn on sales that happen on websites using them. More sales through those sites means more parts are worth a photo.</p>
+        <p class="hint">Images only earn on sales made on sites that use them. OE = original equipment. Base case: 1.5% each.</p>
       </div>
       <div class="ctl">
         <label for="s_uplift">3. Uplift strength</label>
         <div class="val" id="v_uplift"></div>
         <input type="range" id="s_uplift" min="25" max="100" step="5">
-        <div class="ends"><span>A quarter of the case's figures</span><span>As stated in the case</span></div>
-        <p class="hint">How much of the case's sales uplift you believe. At 100% a photo sells 4.5 times as much as no image.</p>
+        <div class="ends"><span>25%</span><span>100% (as in the case)</span></div>
+        <p class="hint">How much of the case's stated uplift to believe. Base case: 100%.</p>
       </div>
     </div>
-    <div class="bar"><span class="lbl">Try:</span><span id="presets"></span><button id="copy">Copy link to this view</button><span id="status" role="status" aria-live="polite"></span></div>
+    <div id="status" role="status" aria-live="polite"></div>
   </section>
 
-  <section class="panel"><p class="plain" id="plain"></p></section>
+  <section class="panel"><p class="plain" id="plain"></p><p class="plain" id="plain2" style="margin-top:10px"></p></section>
   <div class="tiles" id="tiles"></div>
 
   <section class="panel">
+    <h2>Original equipment versus aftermarket</h2>
+    <p class="lead">OE: the 30 carmakers. Aftermarket: 18,200 other brands.</p>
+    <div class="scroll"><table id="mkt"></table></div>
+  </section>
+
+  <section class="panel">
     <h2>What each category gets</h2>
-    <p class="lead">Each bar is 100% of the SKUs in that category. Blue, orange and green need a real part in front of a camera; yellow and pink do not.</p>
+    <p class="lead">Each bar is 100% of that group's SKUs. Blue, orange and green need the real part; yellow and pink do not.</p>
     <div class="legend" id="legend"></div>
     <div class="chart" id="chart"></div>
-    <p class="note">Oil, Service and Wear parts are sold under many part numbers, so one photo is reused many times through $1 rebrands. Crash and Repair parts have one or two part numbers each, so a photo has to pay for itself.</p>
+    <p class="note">Oil, Service and Wear parts carry many part numbers, so one photo is reused through $1 rebrands. Crash and Repair parts carry one or two, so each photo must pay for itself.</p>
   </section>
 
   <section class="panel">
     <h2>The numbers by category</h2>
-    <p class="lead">Share of SKUs getting each image, the shoots needed, and what it costs and earns.</p>
     <div class="scroll"><table id="mix"></table></div>
-    <p class="note">Shoots = photos plus 3D builds. Return = (revenue − cost) ÷ cost.</p>
+    <p class="note">Percentages are shares of SKUs. Shoots = photos plus 3D builds.</p>
   </section>
 
   <section class="panel">
     <h2>The rule behind the mix</h2>
-    <p class="lead">A SKU gets a better image only when it sells enough to pay for it. These are the yearly sales a SKU needs through customers' sites, before any image.</p>
+    <p class="lead">Yearly sales a SKU needs through customers' sites, before any image, for each upgrade to pay.</p>
     <div class="scroll"><table id="thr"></table></div>
     <p class="note" id="thrnote"></p>
   </section>
@@ -158,19 +173,18 @@ footer{color:var(--ink2);font-size:12.5px;padding-bottom:30px}
   </section>
 
   <section class="panel">
-    <details><summary>What is held fixed, and how far to trust this</summary>
+    <details><summary>What is held fixed</summary>
       <ul class="list">
-        <li><b>From the case:</b> SKU, G-code and brand counts; market size by category; the seven image options with their costs and uplifts.</li>
-        <li><b>Held fixed here:</b> Partly earns 2% of the extra sales an image creates; an image earns for 3 years; "part type" in Option 4 means the five categories; aftermarket SKUs cluster on popular parts; every SKU gets at least a text image; no limit on how many parts can be photographed.</li>
-        <li><b>Method:</b> the page simulates a sample of physical parts in each category (about 0.8 million SKUs), gives each SKU long-tailed sales scaled to market size × the share through customers' sites, and picks the best-value image plan for every physical part. Results are scaled to all 71.1M SKUs.</li>
-        <li><b>Accuracy:</b> this is a lighter version of the full model behind the written answer. Across 11 test settings of these three sliders, every image share is within 0.7 percentage points of the full model and cost within 3%.</li>
-        <li><b>Revenue depends directly on sliders 2 and 3.</b> The ranking of image types and the rule are the robust part.</li>
-        <li><b>Not modelled:</b> SKUs that never sell, SKUs that already have an image, and the cost of getting a part in front of a camera.</li>
+        <li><b>From the case:</b> SKU, G-code and brand counts, market size, and the seven image options with their costs and uplifts.</li>
+        <li><b>Held fixed:</b> Partly earns 2% of the extra sales an image creates, for 3 years. "Part type" in Option 4 means the five categories. Every SKU gets at least text. No limit on shoots.</li>
+        <li><b>Method:</b> a sample of about 0.8 million SKUs gets long-tailed sales scaled to market size × market share; the model picks the best-value image plan for each physical part and scales up to 71.1M SKUs.</li>
+        <li><b>Accuracy:</b> a lighter version of the full model behind the written answer. Across 13 test settings, image shares are within 0.7 percentage points of it and cost within 3%.</li>
+        <li><b>Not modelled:</b> SKUs that never sell, SKUs that already have an image, and the cost of sourcing a part to shoot.</li>
       </ul>
     </details>
   </section>
 </main>
-<footer>A candidate's analysis for a business-case exercise. Not affiliated with or published by Partly. Figures are the exercise's own; they are not forecasts.</footer>
+<footer>A candidate's analysis for a business-case exercise. Not affiliated with or published by Partly.</footer>
 </div>
 <div id="tip" role="tooltip"></div>
 <script id="engine">
@@ -380,10 +394,10 @@ var SER=[
  {k:"opt4",name:"Generic brand and part-type image",types:["opt4"]},
  {k:"cheap",name:"Text or diagram",types:["text","diagram","generic"]}];
 var SHORT={d3:"3D",actual:"Photo",rebrand:"Rebrand",opt4:"Generic",cheap:"Text or diagram"};
-var BASE={reach:1.5,conc:1.68,uplift:100};
-var S={reach:BASE.reach,conc:BASE.conc,uplift:BASE.uplift};
-var PRESETS=[["Base case",{}],["Cautious",{reach:0.5,uplift:50}],["Optimistic",{reach:5}]];
-function params(s){return {reachOE:s.reach,reachAM:s.reach,sigma:s.conc,haircut:s.uplift};}
+var BASE={reachOE:1.5,reachAM:1.5,conc:1.68,uplift:100};
+function copyS(s){return {reachOE:s.reachOE,reachAM:s.reachAM,conc:s.conc,uplift:s.uplift};}
+var S=copyS(BASE);
+function params(s){return {reachOE:s.reachOE,reachAM:s.reachAM,sigma:s.conc,haircut:s.uplift};}
 function sum(a,ts){return ts.reduce(function(x,t){return x+a[IDX[t]];},0);}
 function top20(sig){return Math.round(100*(1-normCdf(0.8416-sig)));}
 function money(v){var a=Math.abs(v);if(!isFinite(v))return "–";if(a>=1e9)return "$"+(v/1e9).toFixed(a>=1e10?1:2)+"B";if(a>=1e6)return "$"+(v/1e6).toFixed(a>=1e8?0:1)+"M";if(a>=1e3)return "$"+(v/1e3).toFixed(0)+"k";return "$"+v.toFixed(0);}
@@ -393,63 +407,72 @@ function pct(v){if(v>0&&v<0.5)return "<1%";return v.toFixed(0)+"%";}
 function mult(v){return isFinite(v)?(v>=100?v.toFixed(0):v.toFixed(1))+"x":"–";}
 function reachFromSlider(x){return +(0.1*Math.pow(100,x/200)).toPrecision(2);}
 function reachToSlider(v){return Math.round(200*Math.log(v/0.1)/Math.log(100));}
-var elR=document.getElementById("s_reach"),elC=document.getElementById("s_conc"),elU=document.getElementById("s_uplift");
+var elRO=document.getElementById("s_reachOE"),elRA=document.getElementById("s_reachAM"),elC=document.getElementById("s_conc"),elU=document.getElementById("s_uplift");
 function labels(){
-  var mk=CASE.cats.reduce(function(a,c){return a+c.moe+c.mam;},0)*S.reach/100;
-  document.getElementById("v_reach").innerHTML=S.reach+"% <small>of the market, "+money(mk)+" a year</small>";
+  var mo=CASE.cats.reduce(function(a,c){return a+c.moe;},0)*S.reachOE/100,ma=CASE.cats.reduce(function(a,c){return a+c.mam;},0)*S.reachAM/100;
+  document.getElementById("v_reachOE").innerHTML="OE: "+S.reachOE+"% <small>"+money(mo)+" a year</small>";
+  document.getElementById("v_reachAM").innerHTML="Aftermarket: "+S.reachAM+"% <small>"+money(ma)+" a year</small>";
   document.getElementById("v_conc").innerHTML="Top 20% of SKUs make "+top20(S.conc)+"% <small>of sales</small>";
   var h=S.uplift/100;
   document.getElementById("v_uplift").innerHTML=S.uplift+"% <small>of the case's uplift: a photo sells "+(1+3.5*h).toFixed(h===1?1:2).replace(/0$/,"")+"x</small>";
 }
-function syncInputs(){elR.value=reachToSlider(S.reach);elC.value=S.conc;elU.value=S.uplift;labels();}
+function syncInputs(){elRO.value=reachToSlider(S.reachOE);elRA.value=reachToSlider(S.reachAM);elC.value=S.conc;elU.value=S.uplift;labels();}
 function readHash(){var h=location.hash.replace(/^#/,"");if(!h)return;h.split("&").forEach(function(p){var kv=p.split("="),v=parseFloat(kv[1]);if(!isFinite(v))return;
-  if(kv[0]==="reach")S.reach=Math.min(10,Math.max(0.1,v));if(kv[0]==="conc")S.conc=Math.min(3,Math.max(1,v));if(kv[0]==="uplift")S.uplift=Math.min(100,Math.max(25,v));});}
-function writeHash(){var p=[];if(S.reach!==BASE.reach)p.push("reach="+S.reach);if(S.conc!==BASE.conc)p.push("conc="+S.conc);if(S.uplift!==BASE.uplift)p.push("uplift="+S.uplift);
+  var r=Math.min(10,Math.max(0.1,v));if(kv[0]==="reach"){S.reachOE=r;S.reachAM=r;}if(kv[0]==="oe")S.reachOE=r;if(kv[0]==="am")S.reachAM=r;if(kv[0]==="conc")S.conc=Math.min(3,Math.max(1,v));if(kv[0]==="uplift")S.uplift=Math.min(100,Math.max(25,v));});}
+function writeHash(){var p=[];if(S.reachOE===S.reachAM){if(S.reachOE!==BASE.reachOE)p.push("reach="+S.reachOE);}else{p.push("oe="+S.reachOE);p.push("am="+S.reachAM);}if(S.conc!==BASE.conc)p.push("conc="+S.conc);if(S.uplift!==BASE.uplift)p.push("uplift="+S.uplift);
   try{history.replaceState(null,"",location.pathname+location.search+(p.length?"#"+p.join("&"):""));}catch(e){}}
 var base=null,last=null;
 function render(o){
-  last=o;var t=o.total,isBase=S.reach===BASE.reach&&S.conc===BASE.conc&&S.uplift===BASE.uplift;
+  last=o;var t=o.total,isBase=JSON.stringify(S)===JSON.stringify(BASE);
   var n3=t.count[IDX.d3],nA=t.count[IDX.actual],nR=t.count[IDX.rebrand],nO=t.count[IDX.opt4],nC=sum(t.count,SER[4].types),nP=n3+nA+nR,nT=nO+nC;
-  document.getElementById("plain").innerHTML="At these settings, <b>"+cnt(nP)+" of the 71.1M SKUs ("+pct(100*nP/t.skus)+")</b> get an image based on the real part: "+cnt(n3)+" in 3D, "+cnt(nA)+" photographed and "+cnt(nR)+" rebranded from a photo for $1. The other <b>"+cnt(nT)+" ("+pct(100*nT/t.skus)+")</b> do not sell enough to justify a photo and get a cheap image. This takes <b>"+cnt(t.shoots)+" shoots</b> and costs <b>"+money(t.costTotal)+"</b>. Over 3 years it earns Partly <b>"+money(t.revTotal)+"</b>, a return of <b>"+mult(t.roi)+"</b> the cost.";
+  document.getElementById("plain").innerHTML="<b>"+cnt(nP)+" of 71.1M SKUs ("+pct(100*nP/t.skus)+")</b> get an image of the real part: "+cnt(n3)+" in 3D, "+cnt(nA)+" photos, "+cnt(nR)+" $1 rebrands. The other <b>"+cnt(nT)+" ("+pct(100*nT/t.skus)+")</b> get a cheap image. That takes <b>"+cnt(t.shoots)+" shoots</b>, costs <b>"+money(t.costTotal)+"</b> and earns Partly <b>"+money(t.revTotal)+"</b> over 3 years (<b>"+mult(t.roi)+"</b> return).";
+  var mkt=[0,1].map(function(sg){var m={name:sg?"Aftermarket":"Original equipment (OE)",skus:0,count:TYPES.map(function(){return 0;}),cost:TYPES.map(function(){return 0;}),rev:TYPES.map(function(){return 0;}),sales:0};
+    o.byCat.forEach(function(r,ci){var s=r.seg[sg];m.skus+=s.skus;TYPES.forEach(function(_,i){m.count[i]+=s.count[i];m.cost[i]+=s.cost[i];m.rev[i]+=s.rev[i];});m.sales+=(sg?CASE.cats[ci].mam*o.params.reachAM:CASE.cats[ci].moe*o.params.reachOE)/100;});return m;});
+  function photoShare(r){return 100*(r.count[IDX.d3]+r.count[IDX.actual]+r.count[IDX.rebrand])/r.skus;}
+  function tot(a){return a.reduce(function(x,y){return x+y;},0);}
+  document.getElementById("plain2").innerHTML="By market: <b>"+pct(photoShare(mkt[0]))+" of OE</b> and <b>"+pct(photoShare(mkt[1]))+" of aftermarket</b> SKUs get an image of the real part. OE is "+pct(100*tot(mkt[0].cost)/t.costTotal)+" of the cost and "+pct(100*tot(mkt[0].rev)/t.revTotal)+" of the revenue.";
+  document.getElementById("mkt").innerHTML='<thead><tr><th>Market</th><th>SKUs</th><th>Sales via customers\' sites, no images</th><th>SKUs with a real-part image</th><th>Shoots</th><th>Cost</th><th>3-year revenue</th><th>Return</th></tr></thead><tbody>'+
+    mkt.map(function(m){var c=tot(m.cost),rv=tot(m.rev);return '<tr><td>'+m.name+'</td><td>'+cnt(m.skus)+'</td><td>'+money(m.sales)+' a year</td><td>'+pct(photoShare(m))+'</td><td>'+cnt(m.count[IDX.d3]+m.count[IDX.actual])+'</td><td>'+money(c)+'</td><td>'+money(rv)+'</td><td>'+(c>0?mult((rv-c)/c):"–")+'</td></tr>';}).join("")+
+    '<tr class="total"><td>Both</td><td>'+cnt(t.skus)+'</td><td>'+money(t.baseSales)+' a year</td><td>'+pct(photoShare(t))+'</td><td>'+cnt(t.shoots)+'</td><td>'+money(t.costTotal)+'</td><td>'+money(t.revTotal)+'</td><td>'+mult(t.roi)+'</td></tr></tbody>';
   function cmp(desc,b,f){return desc+((!base||isBase)?"":"<br>Base case: "+f(b));}
   var tiles=[
-    ["Image cost",money(t.costTotal),cmp("About $"+(t.costTotal/t.skus).toFixed(2)+" per SKU on average",base&&base.total.costTotal,money)],
-    ["3-year revenue to Partly",money(t.revTotal),cmp("2% of the extra sales the images create",base&&base.total.revTotal,money)],
-    ["Return on image cost",mult(t.roi),cmp("(Revenue − cost) ÷ cost",base&&base.total.roi,mult)],
-    ["Shoots needed",cnt(t.shoots),cmp("About "+(Math.round(t.shoots/250/100)*100).toLocaleString("en-US")+" a working day if done in 12 months",base&&base.total.shoots,cnt)]];
+    ["Image cost",money(t.costTotal),cmp("$"+(t.costTotal/t.skus).toFixed(2)+" per SKU on average",base&&base.total.costTotal,money)],
+    ["3-year revenue to Partly",money(t.revTotal),cmp("2% of extra sales created",base&&base.total.revTotal,money)],
+    ["Return on image cost",mult(t.roi),cmp("(revenue − cost) ÷ cost",base&&base.total.roi,mult)],
+    ["Shoots needed",cnt(t.shoots),cmp((Math.round(t.shoots/250/100)*100).toLocaleString("en-US")+" a working day over 12 months",base&&base.total.shoots,cnt)]];
   document.getElementById("tiles").innerHTML=tiles.map(function(x){return '<div class="tile"><div class="k">'+x[0]+'</div><div class="v">'+x[1]+'</div><div class="d">'+x[2]+'</div></div>';}).join("");
   document.getElementById("legend").innerHTML=SER.map(function(s){return '<span><i class="t-'+s.k+'"></i>'+s.name+'</span>';}).join("");
   function stack(row,label,sub,cls){
     var h='<div class="row '+(cls||"")+'"><div class="name">'+label+'<small>'+sub+'</small></div><div class="stack">';
     SER.forEach(function(s){var v=sum(row.count,s.types),p=100*v/row.skus;if(p<0.05)return;
-      h+='<div class="t-'+s.k+'" style="flex:'+p.toFixed(3)+' 0 0" data-tip="<b>'+label+': '+s.name+'</b><br>'+(p<0.5?p.toFixed(1)+"%":pct(p))+' of its SKUs ('+cnt(v)+')<br>Cost '+money(sum(row.cost,s.types))+', revenue '+money(sum(row.rev,s.types))+'">'+(p>=7?"<span>"+Math.round(p)+"%</span>":"")+'</div>';});
+      h+='<div class="t-'+s.k+'" style="flex:'+p.toFixed(3)+' 0 0" data-tip="<b>'+(row.tipName||label)+': '+s.name+'</b><br>'+(p<0.5?p.toFixed(1)+"%":pct(p))+' of its SKUs ('+cnt(v)+')<br>Cost '+money(sum(row.cost,s.types))+', revenue '+money(sum(row.rev,s.types))+'">'+(p>=7?"<span>"+Math.round(p)+"%</span>":"")+'</div>';});
     return h+'</div></div>';
   }
-  var ch=stack(t,"All SKUs","71.1M","all");
-  o.byCat.forEach(function(r){var per=r.skus/r.gcodes;ch+=stack(r,r.name,cnt(r.skus)+" SKUs, "+per.toFixed(per<10?1:0)+" per physical part");});
+  var ch=stack(t,"All SKUs","71.1M","top")+stack(mkt[0],"All OE",cnt(mkt[0].skus)+" SKUs","rsub")+stack(mkt[1],"All aftermarket",cnt(mkt[1].skus)+" SKUs","rsub all");
+  o.byCat.forEach(function(r){var per=r.skus/r.gcodes;ch+='<div class="grpname">'+r.name+' <small style="font-weight:400;color:var(--ink2)">'+per.toFixed(per<10?1:0)+' SKUs per physical part</small></div>';
+    r.seg.forEach(function(s,sg){s.tipName=r.name+", "+(sg?"aftermarket":"OE");ch+=stack(s,(sg?"Aftermarket":"OE"),cnt(s.skus)+" SKUs","rsub");});});
   document.getElementById("chart").innerHTML=ch;
   Array.prototype.forEach.call(document.querySelectorAll("#chart .stack div"),function(d){if(d.textContent&&d.scrollWidth>d.clientWidth)d.textContent="";});
   var h='<thead><tr><th>Category</th><th>SKUs</th>'+SER.map(function(s,i){return '<th'+(i===0?' class="grp"':'')+'><span class="sw t-'+s.k+'"></span>'+SHORT[s.k]+'</th>';}).join("")+'<th class="grp">Shoots</th><th>Cost</th><th>3-year revenue</th><th>Return</th></tr></thead><tbody>';
   function tr(name,r,cls){var c=r.cost.reduce(function(a,b){return a+b;},0),rv=r.rev.reduce(function(a,b){return a+b;},0);
     return '<tr class="'+(cls||"")+'"><td>'+name+'</td><td>'+cnt(r.skus)+'</td>'+SER.map(function(s,i){return '<td'+(i===0?' class="grp"':'')+'>'+pct(100*sum(r.count,s.types)/r.skus)+'</td>';}).join("")+'<td class="grp">'+cnt(r.count[IDX.d3]+r.count[IDX.actual])+'</td><td>'+money(c)+'</td><td>'+money(rv)+'</td><td>'+(c>0?mult((rv-c)/c):"–")+'</td></tr>';}
-  o.byCat.forEach(function(r){h+=tr(r.name,r,"");});
-  document.getElementById("mix").innerHTML=h+tr("All SKUs",t,"total")+"</tbody>";
+  o.byCat.forEach(function(r){h+=tr(r.name,r,"cat");r.seg.forEach(function(s,sg){h+=tr(sg?"Aftermarket":"OE",s,"seg");});});
+  document.getElementById("mix").innerHTML=h+tr("All OE",mkt[0],"total")+tr("All aftermarket",mkt[1],"total")+tr("All SKUs",t,"total")+"</tbody>";
   var th=o.thresholds,u=o.params.uplift,hc=o.params.haircut/100,c=o.params.cost;
   function eff(k){return (1+(u[k]-1)*hc).toFixed(2).replace(/\.?0+$/,"")+"x";}
   var rows=[
-    ["Rebrand a photo Partly already owns <small>$"+c.rebrand+" each, sells "+eff("rebrand")+" as much as no image</small>",th[1].v,"Other part numbers of a photographed part"],
-    ["Photograph the part <small>$"+c.actual+" each, sells "+eff("actual")+"</small>",th[2].v,"A part sold under one part number"],
-    ["Give a part number its own photo instead of a rebrand",th[3].v,"Best-selling part numbers of a photographed part"],
-    ["Upgrade the photo to 3D <small>$"+c.d3+" each, sells "+eff("d3")+"</small>",th[4].v,"The very best sellers"]];
-  document.getElementById("thr").innerHTML='<thead><tr><th>Upgrade</th><th>Pays when the SKU sells at least</th><th style="text-align:left">Who it is for</th></tr></thead><tbody>'+rows.map(function(x){return '<tr><td>'+x[0]+'</td><td>'+dollars(x[1])+' a year</td><td style="text-align:left;white-space:normal;color:var(--ink2)">'+x[2]+'</td></tr>';}).join("")+'</tbody>';
-  document.getElementById("thrnote").textContent="Only uplift strength moves these thresholds. The other two sliders change how many SKUs clear them. Everything below the first threshold gets the generic brand and part-type image, which costs a brand $150 once per category, or text where a brand is too small for that to pay.";
+    ["Rebrand an existing photo <small>$"+c.rebrand+", sells "+eff("rebrand")+" vs no image</small>",th[1].v,"Other part numbers of a photographed part"],
+    ["Photograph the part <small>$"+c.actual+", sells "+eff("actual")+"</small>",th[2].v,"A part with one part number"],
+    ["Own photo instead of a rebrand",th[3].v,"Best-selling part numbers"],
+    ["Upgrade to 3D <small>$"+c.d3+", sells "+eff("d3")+"</small>",th[4].v,"The very best sellers"]];
+  document.getElementById("thr").innerHTML='<thead><tr><th>Upgrade</th><th>Pays above</th><th style="text-align:left">Who it is for</th></tr></thead><tbody>'+rows.map(function(x){return '<tr><td>'+x[0]+'</td><td>'+dollars(x[1])+' a year</td><td style="text-align:left;white-space:normal;color:var(--ink2)">'+x[2]+'</td></tr>';}).join("")+'</tbody>';
+  document.getElementById("thrnote").textContent="Only uplift strength moves these. Below the first, a SKU gets the generic image ($150 per brand per category), or text if the brand is too small.";
   var each={d3:"$"+c.d3,actual:"$"+c.actual,rebrand:"$"+c.rebrand,opt4:"$"+c.opt4+" per brand per category",cheap:"$"+c.text.toFixed(2)+" to $"+c.diagram.toFixed(2)};
   document.getElementById("types").innerHTML='<thead><tr><th>Image type</th><th>Cost each</th><th>SKUs</th><th>Share of SKUs</th><th>Total cost</th><th>Share of cost</th><th>Share of revenue</th></tr></thead><tbody>'+
     SER.map(function(s){var n=sum(t.count,s.types),cc=sum(t.cost,s.types),rv=sum(t.rev,s.types);return '<tr><td><span class="sw t-'+s.k+'"></span>'+s.name+'</td><td>'+each[s.k]+'</td><td>'+cnt(n)+'</td><td>'+pct(100*n/t.skus)+'</td><td>'+money(cc)+'</td><td>'+pct(t.costTotal?100*cc/t.costTotal:0)+'</td><td>'+pct(t.revTotal?100*rv/t.revTotal:0)+'</td></tr>';}).join("")+
     '<tr class="total"><td>Total</td><td></td><td>'+cnt(t.skus)+'</td><td>100%</td><td>'+money(t.costTotal)+'</td><td>100%</td><td>100%</td></tr></tbody>';
   var extra=t.revTotal/(o.params.take/100*o.params.life);
-  document.getElementById("revnote").textContent="Sanity check on the revenue: it assumes customers' site sales rise from "+money(t.baseSales)+" to about "+money(t.baseSales+extra)+" a year once the images are live. If that looks too large, lower uplift strength or the share through customers' sites.";
-  var key=JSON.stringify(S);Array.prototype.forEach.call(document.querySelectorAll("#presets button"),function(b){b.classList.toggle("on",b.dataset.s===key);});
+  document.getElementById("revnote").textContent="Check: this assumes customers' site sales rise from "+money(t.baseSales)+" to about "+money(t.baseSales+extra)+" a year. If that looks too large, lower uplift strength or market share.";
 }
 /* run the engine in a worker when the browser allows it, otherwise on the page */
 var worker=null,seq=0,busy=false,queued=false,statusEl=document.getElementById("status"),t0=0;
@@ -468,15 +491,10 @@ try{var src=document.getElementById("engine").textContent+"\nonmessage=function(
   worker.onerror=function(){worker=null;busy=false;if(!base)startBase();else run();};}catch(e){worker=null;}
 var timer=null;
 function changed(){labels();writeHash();clearTimeout(timer);timer=setTimeout(run,150);}
-elR.addEventListener("input",function(){S.reach=reachFromSlider(+elR.value);changed();});
+elRO.addEventListener("input",function(){S.reachOE=reachFromSlider(+elRO.value);changed();});
+elRA.addEventListener("input",function(){S.reachAM=reachFromSlider(+elRA.value);changed();});
 elC.addEventListener("input",function(){S.conc=+(+elC.value).toFixed(2);changed();});
 elU.addEventListener("input",function(){S.uplift=+elU.value;changed();});
-var pre=document.getElementById("presets");
-PRESETS.forEach(function(p){var s={reach:BASE.reach,conc:BASE.conc,uplift:BASE.uplift};Object.keys(p[1]).forEach(function(k){s[k]=p[1][k];});
-  var b=document.createElement("button");b.type="button";b.textContent=p[0];b.dataset.s=JSON.stringify(s);b.style.marginRight="8px";
-  b.addEventListener("click",function(){S=JSON.parse(b.dataset.s);syncInputs();changed();});pre.appendChild(b);});
-document.getElementById("copy").addEventListener("click",function(){writeHash();var b=this,u=location.href;var ok=function(){b.textContent="Link copied";setTimeout(function(){b.textContent="Copy link to this view";},1600);};
-  if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(u).then(ok,function(){prompt("Copy this link",u);});else prompt("Copy this link",u);});
 var tip=document.getElementById("tip");
 document.addEventListener("mousemove",function(e){var s=e.target.closest&&e.target.closest("[data-tip]");if(!s){tip.style.display="none";return;}
   tip.innerHTML=s.getAttribute("data-tip");tip.style.display="block";var w=tip.offsetWidth,hh=tip.offsetHeight,x=e.clientX+14,y=e.clientY+14;
