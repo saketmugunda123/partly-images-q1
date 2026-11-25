@@ -15,7 +15,7 @@ To link straight to a particular view, set the sliders, press **Copy link to thi
 
 Three sliders, the three things the case does not give:
 
-1. **Sales concentration**: how much of each category's sales the top 20% of SKUs make (56% to 98%; base 89%).
+1. **Sales concentration**: how much of each category's sales the top 20% of SKUs make (56% to 98%; base 80%).
 2. **Share of the market through Partly's customers** (0.1% to 10%, the same for OE and aftermarket; base 1.5%).
 3. **Uplift strength**: how much of the case's sales uplift to believe (25% to 100%; base 100%).
 
@@ -23,7 +23,7 @@ Everything else is held at the base case: 2% take on the extra sales an image cr
 
 ## How close it is to the full model
 
-The page runs a lighter version of the simulation behind the written answer: a stratified sample of about 0.8 million SKUs, with brands buying Option 4 according to a brand-size distribution. `src/validate.js` compares it with saved runs of the full model. On the 11 runs that only move these three settings, every image share is within 0.7 percentage points and cost within 3%. Base case here: cost $264M, 3-year revenue $5.14B, return 18.5x (full model: $259M, $5.15B, 18.9x).
+The page runs a lighter version of the simulation behind the written answer: a stratified sample of about 0.8 million SKUs, with brands buying Option 4 according to a brand-size distribution. `src/validate.js` compares it with saved runs of the full model. On the 11 runs that only move these three settings, every image share is within 0.7 percentage points and cost within 3%. Base case here: cost $336M, 3-year revenue $5.09B, return 14.1x (full model: $334M, $5.09B, 14.2x).
 
 ## Rebuild
 

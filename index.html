@@ -380,7 +380,7 @@ var SER=[
  {k:"opt4",name:"Generic brand and part-type image",types:["opt4"]},
  {k:"cheap",name:"Text or diagram",types:["text","diagram","generic"]}];
 var SHORT={d3:"3D",actual:"Photo",rebrand:"Rebrand",opt4:"Generic",cheap:"Text or diagram"};
-var BASE={reach:1.5,conc:2.06,uplift:100};
+var BASE={reach:1.5,conc:1.68,uplift:100};
 var S={reach:BASE.reach,conc:BASE.conc,uplift:BASE.uplift};
 var PRESETS=[["Base case",{}],["Cautious",{reach:0.5,uplift:50}],["Optimistic",{reach:5}]];
 function params(s){return {reachOE:s.reach,reachAM:s.reach,sigma:s.conc,haircut:s.uplift};}
